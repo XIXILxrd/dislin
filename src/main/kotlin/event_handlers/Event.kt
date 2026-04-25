@@ -2,19 +2,18 @@ package dev.rukhlovar.event_handlers
 
 import dev.kord.common.annotation.KordVoice
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
-import dev.kord.voice.VoiceConnection
 
 interface Event {
-    interface MusicPlayer: Event {
-        suspend fun play()
+    interface MusicPlayer : Event {
+        suspend fun play(event: ChatInputCommandInteractionCreateEvent)
 
-        suspend fun stop()
+        suspend fun stop(event: ChatInputCommandInteractionCreateEvent)
 
-        suspend fun skip()
+        suspend fun skip(event: ChatInputCommandInteractionCreateEvent)
 
-        suspend fun add()
+        suspend fun add(event: ChatInputCommandInteractionCreateEvent)
 
-        suspend fun remove()
+        suspend fun remove(event: ChatInputCommandInteractionCreateEvent)
     }
 
     @KordVoice

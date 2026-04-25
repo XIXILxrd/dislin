@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.kord.core)
     implementation(libs.kord.voice)
     implementation(libs.kord.core.voice)
+    implementation(libs.kord.lavakord)
     implementation(libs.kotlinx.coroutines)
 }
 

@@ -2,11 +2,13 @@
 
 package dev.rukhlovar.commands
 
+import dev.kord.common.annotation.KordPreview
 import dev.kord.common.annotation.KordVoice
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.rukhlovar.event_handlers.ConnectionEventHandler
 
+@OptIn(KordPreview::class)
 sealed class ConnectionCommand(override val name: String, override val description: String) : Command(name, description) {
 
     val connectionEventHandler = ConnectionEventHandler()
@@ -14,6 +16,7 @@ sealed class ConnectionCommand(override val name: String, override val descripti
     object Join : ConnectionCommand("join", "Пригласить бота в голосовой чат") {
         override suspend fun configure(builder: BaseInputChatBuilder) { /*nothing*/ }
 
+        @OptIn(KordPreview::class)
         override suspend fun execute(event: ChatInputCommandInteractionCreateEvent) {
             connectionEventHandler.join(event)
         }

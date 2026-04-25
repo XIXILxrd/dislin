@@ -1,11 +1,14 @@
 [versions]
 kord = "0.17.0"
 coroutines = "1.10.2"
+lavakord = "9.1.5"
 
 [libraries]
 kord-core = { module = "dev.kord:kord-core", version.ref = "kord" }
 kord-voice = { module = "dev.kord:kord-voice", version.ref = "kord" }
-kord-core-voice = { module = "dev.kord:kord-core-voice", version.ref = "kord"}
+kord-core-voice = { module = "dev.kord:kord-core-voice", version.ref = "kord" }
+kord-lavakord = { module = "dev.schlaubi.lavakord:kord", version.ref = "lavakord"}
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+
 
 [plugins]

@@ -5,6 +5,7 @@ import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.integer
 import dev.kord.rest.builder.interaction.string
 import dev.rukhlovar.event_handlers.MusicPlayerEventHandler
+import dev.rukhlovar.models.TrackSource
 
 sealed class MusicPlayedCommand(
     override val name: String,
@@ -14,15 +15,25 @@ sealed class MusicPlayedCommand(
     val musicPlayerEventHandler = MusicPlayerEventHandler()
 
     object Play : MusicPlayedCommand("play", "Попросить бота включить трек") {
-        private const val PARAM_NAME = "query"
-        private const val PARAM_DESCRIPTION = "Название трека"
+        const val QUERY_PARAM = "query"
+        private const val QUERY_PARAM_DESCRIPTION = "Название трека"
+        const val SOURCE_PARAM = "source"
+        private const val SOURCE_PARAM_DESCRIPTION = "Где искать трек"
 
         override suspend fun configure(builder: BaseInputChatBuilder) {
-            builder.string(PARAM_NAME, PARAM_DESCRIPTION)
+            builder.string(QUERY_PARAM, QUERY_PARAM_DESCRIPTION) {
+                required = true
+            }
+            builder.string(SOURCE_PARAM, SOURCE_PARAM_DESCRIPTION) {
+                required = false
+                TrackSource.entries.forEach { source ->
+                    choice(source.title, source.prefix)
+                }
+            }
         }
 
         override suspend fun execute(event: ChatInputCommandInteractionCreateEvent) {
-            musicPlayerEventHandler.play()
+            musicPlayerEventHandler.play(event)
         }
     }
 
@@ -30,7 +41,7 @@ sealed class MusicPlayedCommand(
         override suspend fun configure(builder: BaseInputChatBuilder) { /*nothing*/ }
 
         override suspend fun execute(event: ChatInputCommandInteractionCreateEvent) {
-            musicPlayerEventHandler.stop()
+            musicPlayerEventHandler.stop(event)
         }
     }
 
@@ -38,20 +49,30 @@ sealed class MusicPlayedCommand(
         override suspend fun configure(builder: BaseInputChatBuilder) { /*nothing*/ }
 
         override suspend fun execute(event: ChatInputCommandInteractionCreateEvent) {
-            musicPlayerEventHandler.skip()
+            musicPlayerEventHandler.skip(event)
         }
     }
 
     object Add : MusicPlayedCommand("add", "Попросить добавить бота трек в очередь") {
-        private const val PARAM_NAME = "query"
-        private const val PARAM_DESCRIPTION = "Название трека"
+        const val QUERY_PARAM = "query"
+        private const val QUERY_PARAM_DESCRIPTION = "Название трека"
+        const val SOURCE_PARAM = "source"
+        private const val SOURCE_PARAM_DESCRIPTION = "Где искать трек"
 
         override suspend fun configure(builder: BaseInputChatBuilder) {
-            builder.string(PARAM_NAME, PARAM_DESCRIPTION)
+            builder.string(QUERY_PARAM, QUERY_PARAM_DESCRIPTION) {
+                required = true
+            }
+            builder.string(SOURCE_PARAM, SOURCE_PARAM_DESCRIPTION) {
+                required = false
+                TrackSource.entries.forEach { source ->
+                    choice(source.title, source.prefix)
+                }
+            }
         }
 
         override suspend fun execute(event: ChatInputCommandInteractionCreateEvent) {
-            musicPlayerEventHandler.add()
+            musicPlayerEventHandler.add(event)
         }
     }
 
@@ -64,7 +85,7 @@ sealed class MusicPlayedCommand(
         }
 
         override suspend fun execute(event: ChatInputCommandInteractionCreateEvent) {
-            musicPlayerEventHandler.remove()
+            musicPlayerEventHandler.remove(event)
         }
     }
 }
