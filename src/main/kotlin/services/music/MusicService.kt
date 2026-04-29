@@ -44,6 +44,11 @@ class MusicService(
         return player.search(query, MAX_RESULT_LENGTH)
     }
 
+    suspend fun connectAudio(guildId: Snowflake, voiceChannelId: Snowflake) {
+        val player = playerManager.getOrCreate(guildId)
+        player.connectAudio(voiceChannelId)
+    }
+
     companion object {
         private const val MAX_RESULT_LENGTH = 10
     }

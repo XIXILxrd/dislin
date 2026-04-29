@@ -2,6 +2,7 @@ package dev.rukhlovar.services.music
 
 import dev.arbjerg.lavalink.protocol.v4.LoadResult
 import dev.arbjerg.lavalink.protocol.v4.Track
+import dev.kord.common.entity.Snowflake
 import dev.schlaubi.lavakord.audio.Link
 import dev.schlaubi.lavakord.audio.TrackEndEvent
 import dev.schlaubi.lavakord.audio.TrackStartEvent
@@ -81,6 +82,14 @@ class GuildPlayer(
             is LoadResult.TrackLoaded -> listOf(result.data)
             else -> emptyList()
         }
+    }
+
+    suspend fun connectAudio(voiceChannelId: Snowflake) {
+        link.connectAudio(voiceChannelId.value)
+    }
+
+    suspend fun disconnectAudio() {
+        link.disconnectAudio()
     }
 
     private fun isPlaying(): Boolean = link.player.playingTrack != null

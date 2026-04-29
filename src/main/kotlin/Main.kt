@@ -60,7 +60,7 @@ suspend fun main() {
     val selectMenuListener = SelectMenuListener(musicService)
 
     val connectionHandler = ConnectionEventHandler()
-    val musicPlayerEventHandler = MusicPlayerEventHandler(musicService, VoiceConnectionServiceImpl)
+    val musicPlayerEventHandler = MusicPlayerEventHandler(musicService)
 
     val commands: List<Command> = listOf(
         //--------------------------------------------------------------------------------------------------------------

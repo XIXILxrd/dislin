@@ -20,7 +20,6 @@ import dev.rukhlovar.services.music.MusicService
 @OptIn(KordVoice::class)
 class MusicPlayerEventHandler(
     private val musicService: MusicService,
-    private val connectionRepository: VoiceConnectionService
 ) : Event.MusicPlayer {
 
     @OptIn(KordPreview::class)
@@ -52,7 +51,9 @@ class MusicPlayerEventHandler(
         }
 
         SessionStoreRepository.save(interaction.user.id, searchResult)
-        connectionRepository.join(interaction)
+        println("channelId: ${interaction.getMemberChannelId()}")
+        musicService.connectAudio(guild.id, interaction.getMemberChannelId()!!)
+
     }
 
     @OptIn(KordPreview::class)

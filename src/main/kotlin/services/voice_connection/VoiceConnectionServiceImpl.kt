@@ -27,39 +27,12 @@ object VoiceConnectionServiceImpl : VoiceConnectionService {
     }
 
     override suspend fun join(interaction: ChatInputCommandInteraction): ConnectionResult {
-        val guildIdentifier = interaction.data.guildId.value ?: return ConnectionResult.Disconnected
-        val guild = interaction.kord.getGuild(guildIdentifier)
-        val member = guild.getMemberOrNull(interaction.user.id) ?: return ConnectionResult.Disconnected
-
-        val memberVoiceState = member.getVoiceStateOrNull() ?: run {
-            return ConnectionResult.Error
-        }
-
-        memberVoiceState.getChannelOrNull()?.let { channel ->
-            get(guildIdentifier)?.let {
-                val botVoiceChannelId = interaction.kord.getSelf().asMember(guildIdentifier).getVoiceState().channelId
-                if (channel.id == botVoiceChannelId) {
-                    return ConnectionResult.Error
-                }
-            }
-
-            val voiceState = channel.connect { } .also {
-                put(guildIdentifier, voiceConnection = it)
-            }
-
-            return ConnectionResult.Connected(voiceState)
-        }
 
         return ConnectionResult.Disconnected
     }
 
     override suspend fun leave(interaction: ChatInputCommandInteraction): ConnectionResult {
-        val guildIdentifier = interaction.data.guildId.value ?: return ConnectionResult.Error
-        val currentVoiceConnection = get(guildIdentifier) ?: return ConnectionResult.Error
 
-        currentVoiceConnection.leave().also {
-            remove(guildIdentifier)
-        }
         return ConnectionResult.Disconnected
     }
 }
