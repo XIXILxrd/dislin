@@ -5,7 +5,7 @@ import dev.kord.common.annotation.KordVoice
 import dev.kord.core.behavior.interaction.response.respond
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.rukhlovar.models.ConnectionResult
-import dev.rukhlovar.repositories.voice_connection.VoiceConnectionRepository
+import dev.rukhlovar.services.voice_connection.VoiceConnectionService
 
 @KordPreview
 @KordVoice
@@ -13,9 +13,9 @@ class ConnectionEventHandler : Event.Connection {
 
     override suspend fun join(event: ChatInputCommandInteractionCreateEvent) {
         val response = event.interaction.deferPublicResponse()
-        val voiceConnectionRepository = event.customContext as VoiceConnectionRepository
+        val voiceConnectionRepository = event.customContext as VoiceConnectionService
 
-        val connectionState = voiceConnectionRepository.join(event)
+        val connectionState = voiceConnectionRepository.join(event.interaction)
 
         when (connectionState) {
             is ConnectionResult.Disconnected -> response.respond { content = "❌ Бот должен находиться в голосовом канале" }
@@ -26,9 +26,9 @@ class ConnectionEventHandler : Event.Connection {
 
     override suspend fun leave(event: ChatInputCommandInteractionCreateEvent) {
         val response = event.interaction.deferPublicResponse()
-        val voiceConnectionRepository = event.customContext as VoiceConnectionRepository
+        val voiceConnectionRepository = event.customContext as VoiceConnectionService
 
-        val connectionState = voiceConnectionRepository.leave(event)
+        val connectionState = voiceConnectionRepository.leave(event.interaction)
 
         when (connectionState) {
             is ConnectionResult.Connected -> response.respond { content = "❌ Что-то пошло не так" }

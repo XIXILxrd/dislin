@@ -6,14 +6,17 @@ import dev.kord.common.annotation.KordPreview
 import dev.kord.common.annotation.KordVoice
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
-import dev.rukhlovar.event_handlers.ConnectionEventHandler
+import dev.rukhlovar.event_handlers.Event
 
 @OptIn(KordPreview::class)
-sealed class ConnectionCommand(override val name: String, override val description: String) : Command(name, description) {
+sealed class ConnectionCommand(
+    override val name: String,
+    override val description: String
+) : Command(name, description) {
 
-    val connectionEventHandler = ConnectionEventHandler()
-
-    object Join : ConnectionCommand("join", "Пригласить бота в голосовой чат") {
+    class Join(
+        private val connectionEventHandler: Event.Connection
+    ) : ConnectionCommand("join", "Пригласить бота в голосовой чат") {
         override suspend fun configure(builder: BaseInputChatBuilder) { /*nothing*/ }
 
         @OptIn(KordPreview::class)
@@ -22,7 +25,9 @@ sealed class ConnectionCommand(override val name: String, override val descripti
         }
     }
 
-    object Leave : ConnectionCommand("leave", "Выгнать бота из голосового чата") {
+    class Leave(
+        private val connectionEventHandler: Event.Connection
+    ) : ConnectionCommand("leave", "Выгнать бота из голосового чата") {
         override suspend fun configure(builder: BaseInputChatBuilder) { /*nothing*/ }
 
         override suspend fun execute(event: ChatInputCommandInteractionCreateEvent) {

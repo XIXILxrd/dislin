@@ -1,11 +1,10 @@
-package dev.rukhlovar
+package dev.rukhlovar.services
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.rukhlovar.commands.Command
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
@@ -30,13 +29,11 @@ class CommandRegistry(private val kord: Kord) {
     }
 
     fun register(commands: List<Command>) {
-        commands.forEach { command ->
-            register(command)
-        }
+        commands.forEach { command -> register(command) }
     }
 
     private suspend fun deleteCommands(guildId: Snowflake) {
-        kord.getGuildApplicationCommands(guildId).collect { command ->
+        kord.getGuildApplicationCommands(guildId).onEach { command ->
             command.delete()
         }
     }
@@ -44,6 +41,5 @@ class CommandRegistry(private val kord: Kord) {
     suspend fun handleEvent(event: ChatInputCommandInteractionCreateEvent) {
         val commandName = event.interaction.command.rootName
         _commands[commandName]?.execute(event)
-        println("Command $commandName executed")
     }
 }

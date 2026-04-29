@@ -1,18 +1,16 @@
-package dev.rukhlovar.repositories.voice_connection
+package dev.rukhlovar.services.voice_connection
 
 import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.connect
-import dev.kord.core.behavior.interaction.response.respond
-import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
+import dev.kord.core.entity.interaction.ChatInputCommandInteraction
 import dev.kord.voice.VoiceConnection
 import dev.rukhlovar.models.ConnectionResult
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 @KordVoice
-object VoiceConnectionRepositoryImpl : VoiceConnectionRepository {
+object VoiceConnectionServiceImpl : VoiceConnectionService {
 
     private val _connections = MutableStateFlow<Map<Snowflake, VoiceConnection>>(emptyMap())
 
@@ -25,14 +23,10 @@ object VoiceConnectionRepositoryImpl : VoiceConnectionRepository {
     }
 
     private fun remove(guildIdentifier: Snowflake) {
-        _connections.update {
-            it - guildIdentifier
-        }
+        _connections.update { it - guildIdentifier }
     }
 
-    override suspend fun join(event: ChatInputCommandInteractionCreateEvent): ConnectionResult {
-        val interaction = event.interaction
-
+    override suspend fun join(interaction: ChatInputCommandInteraction): ConnectionResult {
         val guildIdentifier = interaction.data.guildId.value ?: return ConnectionResult.Disconnected
         val guild = interaction.kord.getGuild(guildIdentifier)
         val member = guild.getMemberOrNull(interaction.user.id) ?: return ConnectionResult.Disconnected
@@ -43,15 +37,13 @@ object VoiceConnectionRepositoryImpl : VoiceConnectionRepository {
 
         memberVoiceState.getChannelOrNull()?.let { channel ->
             get(guildIdentifier)?.let {
-                val botVoiceChannelId = event.kord.getSelf().asMember(guildIdentifier).getVoiceState().channelId
+                val botVoiceChannelId = interaction.kord.getSelf().asMember(guildIdentifier).getVoiceState().channelId
                 if (channel.id == botVoiceChannelId) {
                     return ConnectionResult.Error
                 }
             }
 
-            val voiceState = channel.connect {
-                selfDeaf = true
-            }.also {
+            val voiceState = channel.connect { } .also {
                 put(guildIdentifier, voiceConnection = it)
             }
 
@@ -61,9 +53,7 @@ object VoiceConnectionRepositoryImpl : VoiceConnectionRepository {
         return ConnectionResult.Disconnected
     }
 
-    override suspend fun leave(event: ChatInputCommandInteractionCreateEvent): ConnectionResult {
-        val interaction = event.interaction
-
+    override suspend fun leave(interaction: ChatInputCommandInteraction): ConnectionResult {
         val guildIdentifier = interaction.data.guildId.value ?: return ConnectionResult.Error
         val currentVoiceConnection = get(guildIdentifier) ?: return ConnectionResult.Error
 
