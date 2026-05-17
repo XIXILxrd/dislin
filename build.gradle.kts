@@ -15,15 +15,16 @@ plugins {
 group = "dev.rukhlovar"
 version = "1.0-SNAPSHOT"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     testImplementation(kotlin("test"))
     implementation(libs.kord.core)
     implementation(libs.kord.voice)
     implementation(libs.kord.core.voice)
+    implementation(libs.kord.lavakord)
+    implementation(libs.kord.rest)
+    implementation(libs.lavakord)
+    implementation(libs.lavasrc)
+    implementation(libs.lavasrc.protocol)
     implementation(libs.kotlinx.coroutines)
 }
 
@@ -32,6 +33,7 @@ tasks.test {
 }
 
 tasks.withType<JavaExec> {
-    val token = readProperty("TOKEN")
-    systemProperties("bot.token" to token)
+    systemProperties("bot.token" to readProperty("TOKEN"))
+    systemProperties("bot.address" to readProperty("ADDRESS"))
+    systemProperties("bot.pass" to readProperty("PASS"))
 }
