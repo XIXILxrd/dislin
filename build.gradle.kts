@@ -25,9 +25,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines)
 }
 
-private fun readProperty(key: String, propertiesFile: File = File(rootProject.rootDir, "local.properties")): String {
+private fun readProperty(key: String, propertiesFile: File? = File(rootProject.rootDir, "local.properties")): String? {
     val properties = Properties().apply {
-        propertiesFile.inputStream().use { fis -> load(fis) }
+        propertiesFile?.inputStream().use { fis -> load(fis) }
     }
 
     return properties.getProperty(key)
@@ -38,9 +38,14 @@ tasks.test {
 }
 
 tasks.withType<JavaExec> {
-    systemProperties("bot.token" to readProperty("TOKEN"))
-    systemProperties("bot.address" to readProperty("ADDRESS"))
-    systemProperties("bot.pass" to readProperty("PASS"))
+    val token = readProperty("TOKEN") ?: System.getenv("TOKEN")
+    val port = readProperty("SERVER_PORT") ?: System.getenv("SERVER_PORT")
+    val address = readProperty("SERVER_ADDRESS") ?: System.getenv("SERVER_ADDRESS")
+    val password = readProperty("SERVER_PASSWORD") ?: System.getenv("SERVER_PASSWORD")
+
+    systemProperties("bot.token" to token)
+    systemProperties("bot.address" to "$address:$port")
+    systemProperties("bot.pass" to password)
 }
 
 tasks.withType<KotlinCompile>().configureEach {
