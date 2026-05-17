@@ -26,8 +26,12 @@ dependencies {
 }
 
 private fun readProperty(key: String, propertiesFile: File? = File(rootProject.rootDir, "local.properties")): String? {
+    if (propertiesFile == null) {
+        return null
+    }
+
     val properties = Properties().apply {
-        propertiesFile?.inputStream().use { fis -> load(fis) }
+        propertiesFile.inputStream().use { fis -> load(fis) }
     }
 
     return properties.getProperty(key)
